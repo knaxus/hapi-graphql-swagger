@@ -22,15 +22,22 @@ const init = async () => {
     },
     {
       method: 'GET',
-      path: 'api/v1/paintings',
+      path: '/api/v1/paintings',
       handler: (req, reply) => {
+        return Painting.find();
+      }
+    },
+    {
+      method: 'POST',
+      path: '/api/v1/paintings',
+      handler: async (req, reply) => {
         const { name, url, techniques } = req.payload;
         const painting = new Painting({
           name,
           url,
           techniques
         });
-        return painting.find();
+        return await painting.save();
       }
     }
   ]);
