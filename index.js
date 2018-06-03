@@ -1,5 +1,10 @@
 const hapi = require('hapi');
+const mongoose = require('mongoose');
 
+mongoose.connect('mongodb://localhost/modern-api');
+mongoose.connection.once('open', () => {
+  console.log('connected to database');
+});
 const server = hapi.server({
   port: 4000,
   host: 'localhost'
