@@ -17,7 +17,7 @@ const init = async () => {
       method: 'GET',
       path: '/',
       handler: function(request, reply) {
-        return `<h1>My modern api</h1>`;
+        return `<h1>Modern apis</h1>`;
       }
     },
     {
