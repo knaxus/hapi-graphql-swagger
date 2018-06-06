@@ -1,46 +1,38 @@
 const hapi = require('hapi');
-const mongoose = require('mongoose');
-const Painting = require('./models/Painting');
+const { graphqlHapi, graphiqlHapi } = require('apollo-server-hapi');
 
-mongoose.connect('mongodb://localhost/modern-api');
-mongoose.connection.once('open', () => {
-  console.log('connected to database');
-});
+const schema = require('./graphql/schema');
+
 const server = hapi.server({
   port: 4000,
   host: 'localhost'
 });
-
 const init = async () => {
-  server.route([
-    {
-      method: 'GET',
-      path: '/',
-      handler: function(request, reply) {
-        return `<h1>Modern apis</h1>`;
-      }
-    },
-    {
-      method: 'GET',
-      path: '/api/v1/paintings',
-      handler: (req, reply) => {
-        return Painting.find();
-      }
-    },
-    {
-      method: 'POST',
-      path: '/api/v1/paintings',
-      handler: async (req, reply) => {
-        const { name, url, techniques } = req.payload;
-        const painting = new Painting({
-          name,
-          url,
-          techniques
-        });
-        return await painting.save();
+  await server.register({
+    plugin: graphiqlHapi,
+    options: {
+      path: '/graphiql',
+      graphqlOptions: {
+        endpointURL: '/graphql'
+      },
+      route: {
+        cors: true
       }
     }
-  ]);
+  });
+
+  await server.register({
+    plugin: graphqlHapi,
+    options: {
+      path: '/graphql',
+      graphqlOptions: {
+        schema
+      },
+      route: {
+        cors: true
+      }
+    }
+  });
   await server.start();
 };
 
