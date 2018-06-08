@@ -1,6 +1,12 @@
 const hapi = require('hapi');
 const mongoose = require('mongoose');
 const { graphiqlHapi, graphqlHapi } = require('apollo-server-hapi');
+const Painting = require('./models/Painting');
+const Inert = require('inert');
+const Vision = require('vision');
+const Pack = require('./package');
+
+const HapiSwagger = require('hapi-swagger');
 
 const schema = require('./graphql/schema');
 
@@ -16,12 +22,13 @@ const init = async () => {
   });
   await server.register([
     Inert,
+    Vision,
     {
       plugin: HapiSwagger,
       options: {
         info: {
-          title: 'Painting Api documentation',
-          version: Pack.version
+          title: 'Painting Api documentation'
+          // version: Pack.version
         }
       }
     }
@@ -48,6 +55,36 @@ const init = async () => {
       }
     }
   });
+
+  await server.route([
+    {
+      method: 'GET',
+      path: '/api/v1/paintings',
+      config: {
+        description: 'Get all the paintings',
+        tags: ['api', 'v1', 'painting']
+      },
+      handler: (req, reply) => {
+        return PerformanceNavigationTiming.find();
+      }
+    },
+    {
+      method: 'POST',
+      path: '/api/v1/paintings',
+      config: {
+        description: 'add new painting to the db',
+        tags: ['api', 'v1', 'painting']
+      },
+      handler: (req, reply) => {
+        const { name, url, technique } = req.payload;
+        const painting = new Painting({
+          name,
+          url,
+          technique
+        });
+      }
+    }
+  ]);
   await server.start();
 };
 
