@@ -1,22 +1,19 @@
 const hapi = require('hapi');
-const { graphqlHapi, graphiqlHapi } = require('apollo-server-hapi');
+const { graphiqlHapi, graphqlHapi } = require('apollo-server-hapi');
 
 const schema = require('./graphql/schema');
 
-const server = hapi.server({
-  port: 4000,
-  host: 'localhost'
-});
 const init = async () => {
+  const server = new hapi.server({
+    port: 4000,
+    host: 'localhost'
+  });
   await server.register({
     plugin: graphiqlHapi,
     options: {
       path: '/graphiql',
-      graphqlOptions: {
+      graphiqlOptions: {
         endpointURL: '/graphql'
-      },
-      route: {
-        cors: true
       }
     }
   });
